@@ -76,6 +76,22 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     ggiraph(code = print(gg), width_svg=10)
   })
 
+  #Delta Wheat cost Map
+
+  output$Wheat_USD <-renderggiraph({
+    world <- map_data("world")
+    wheatDF<-setNames(data.frame(df[1], dfWheatYield[2]*input$obs*(1/13.4)*210),c("Country","thousands_USD"))
+    map.world_joined <- left_join(world, wheatDF, by = c('region' = 'Country'))
+    # using width="auto" and height="auto" to automatically adjust the map size
+    gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
+                                            aes(x = long, y = lat, group = group, fill = thousands_USD, tooltip
+=sprintf("%s<br/>%s",region, thousands_USD)))
+    gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato",na.value="white")
+    gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+    gg<-gg+theme_map()
+    ggiraph(code = print(gg), width_svg=10)
+  })
+
   #Delta Asthma-related ER visits Map
 
   dfAsthmaER <- data.frame(asthmaERV["Country"],asthmaERV["CasesMEANper10Mt"],asthmaERV["CostsMEAN2018USDperkt"])
@@ -99,13 +115,13 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
   #dfAsthmaER <- data.frame(asthmaERV["Country"],asthmaERV["CasesMEANper10Mt"],asthmaERV["CostsMEAN2018USDperkt"])
   output$ozoneAsthmaERCost_2040 <-renderggiraph({
     world <- map_data("world")
-    asthmaDFcost<-setNames(data.frame(df[1], dfAsthmaER[3]*input$obs*(1700/1.34)),c("Country","AvoidedCosts"))
+    asthmaDFcost<-setNames(data.frame(df[1], dfAsthmaER[3]*input$obs*(1.7/1.34)),c("Country","thousands_USD"))
     map.world_joined <- left_join(world, asthmaDFcost, by = c('region' = 'Country'))
     # using width="auto" and height="auto" to
     # automatically adjust the map size
     gg<-ggplot() + geom_polygon_interactive(data = map.world_joined, 
-                                            aes(x = long, y = lat, group = group, fill = AvoidedCosts, tooltip
-=sprintf("%s<br/>%s",region, AvoidedCosts)))
+                                            aes(x = long, y = lat, group = group, fill = thousands_USD, tooltip
+=sprintf("%s<br/>%s",region, thousands_USD)))
      gg<-gg+ scale_fill_gradient(low = "grey95", high = "tomato", na.value="white")
     gg<-gg+ coord_proj("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
     gg<-gg+theme_map()
@@ -122,8 +138,7 @@ cat("\nEXECUTION ", format(Sys.time(), "%a %b %d %X %Y"), "\n", file=stderr())
     tempExpFrame<-data.frame(1-exp((data.frame((df[2]*input$obs*(1/134))-EpiTMREL)+dfO3[2])*-1*EpiBeta))
     #below is the Mean AF
     meanAF[2] <- ifelse(meanAF[1]<0,0,tempExpFrame[1])
-    deathResp<-(-1*data.frame(meanAF[2])*dfResp[1])+dfResp[2]
-    deathCol<-ceiling(deathResp[1])
+    deathCol<-ceiling(-1*data.frame(meanAF[2])*dfResp[1]+dfResp[2])
     deathFram <- data.frame(df[1],deathCol)
     dfDeaths <- setNames(deathFram,c("Country","AvoidedDeaths"))
     
