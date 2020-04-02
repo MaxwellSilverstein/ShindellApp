@@ -92,6 +92,12 @@ shinyUI(dashboardPage(skin='blue',
                     ggiraphOutput("Wheat_kt"))
               ),
              h4("The above map shows the change in yield of wheat in response to the input methane emissions changes. Values are based on the multi-model mean of the participating models' temperature, precipitation and ozone responses along with a small contribution from CO2 fertilization. Additional analyses demonstrated that ozone responses are approximately linearly proportional to methane emissions changes, so that these interpolated results are accurate for current background atmospheric conditions."),
+                fluidRow(
+                box(title = "Valuation of Change in Yield of Wheat due to Climate and Ozone Response to Methane", 
+                    width = 12,
+                    ggiraphOutput("Wheat_USD"))
+              ),
+             h4("The above map shows the valuation of the change in yield of wheat in response to the input methane emissions changes. Values are based on the multi-model mean of the participating models' temperature, precipitation and ozone responses along with a small contribution from CO2 fertilization to establish yield changes, which are then valued based on world commodity prices. Additional analyses demonstrated that ozone responses are approximately linearly proportional to methane emissions changes, so that these interpolated results are accurate for current background atmospheric conditions."),
              fluidRow(
               
                 box(title = "Change in Asthma-related Emergency Room Visits due to Ozone Exposure", 
